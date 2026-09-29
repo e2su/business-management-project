@@ -1,0 +1,53 @@
+# Full stack: warehouse + management API + file watcher.
+#   cp .env.example .env    # then edit passwords
+#   docker compose up -d --build
+#
+#   API docs:        http://localhost:8000/docs
+#   Landing zone:    ./data/incoming   (drop CSV/Excel/JSON files here)
+#   Power BI:        PostgreSQL server "localhost:5432", database "sales_dw", schema "mart"
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-salesdw}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-salesdw}
+      POSTGRES_DB: ${POSTGRES_DB:-sales_dw}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-salesdw} -d ${POSTGRES_DB:-sales_dw}"]
+      interval: 5s
+      retries: 20
+
+  api:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-m", "salesdw", "serve"]
+    environment: &app-env
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-salesdw}:${POSTGRES_PASSWORD:-salesdw}@db:5432/${POSTGRES_DB:-sales_dw}
+      SALESDW_API_KEY: ${SALESDW_API_KEY:-}
+      WATCH_INTERVAL_SECONDS: ${WATCH_INTERVAL_SECONDS:-30}
+    ports:
+      - "8000:8000"
+    volumes: &app-volumes
+      - ./data:/app/data
+      - ./config:/app/config        # edit mappings without rebuilding
+    depends_on:
+      db:
+        condition: service_healthy
+
+  watcher:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-m", "salesdw", "watch"]
+    environment: *app-env
+    volumes: *app-volumes
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

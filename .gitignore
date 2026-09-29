@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.env
+data/incoming/*
+data/processed/*
+data/failed/*
+data/sample/
+!data/**/.gitkeep
+infra/terraform/.terraform/
+infra/terraform/*.tfstate*
+infra/terraform/terraform.tfvars

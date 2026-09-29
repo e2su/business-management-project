@@ -1,0 +1,27 @@
+# Runtime settings. Every value can be overridden with an environment variable
+# (shown in brackets), which is how Docker / the cloud VM configure it.
+
+database_url: postgresql+psycopg2://salesdw:salesdw@localhost:5432/sales_dw  # [DATABASE_URL]
+
+paths:
+  incoming: data/incoming     # [SALESDW_INCOMING]  drop new files here
+  processed: data/processed   # [SALESDW_PROCESSED] successfully loaded files are archived here
+  failed: data/failed         # [SALESDW_FAILED]    files that could not be loaded
+
+watch_interval_seconds: 30    # [WATCH_INTERVAL_SECONDS] how often the watcher checks for new files
+
+# Reporting currency. Order amounts in other currencies are converted with
+# these rates (1 unit of currency = rate units of base currency).
+# Add new currencies here when a new market starts sending data.
+base_currency: USD
+fx_rates:
+  USD: 1.0
+  EUR: 1.08
+  GBP: 1.27
+  SAR: 0.2667
+  AED: 0.2723
+  EGP: 0.0206
+
+# Fail-safe: if more than this share of a file's rows is rejected, the whole
+# file is treated as broken and moved to data/failed instead of partially loading.
+max_reject_ratio: 0.5

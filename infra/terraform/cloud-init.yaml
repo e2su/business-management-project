@@ -1,0 +1,62 @@
+#cloud-config
+# First-boot provisioning of the SalesDW VM (rendered by Terraform templatefile).
+package_update: true
+packages:
+  - ca-certificates
+  - curl
+  - git
+
+write_files:
+  - path: /usr/local/bin/salesdw-bootstrap.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      DISK=/dev/disk/azure/scsi1/lun0
+      # The data disk is attached right after the VM is created - wait for it.
+      for i in $(seq 1 60); do [ -e "$DISK" ] && break; sleep 5; done
+      if [ -e "$DISK" ]; then
+        if ! blkid "$DISK" >/dev/null 2>&1; then mkfs.ext4 -F "$DISK"; fi
+        mkdir -p /srv/salesdw
+        grep -q "$DISK" /etc/fstab || echo "$DISK /srv/salesdw ext4 defaults,nofail 0 2" >> /etc/fstab
+        mount -a
+      fi
+      mkdir -p /srv/salesdw
+
+      # Docker Engine + compose plugin
+      curl -fsSL https://get.docker.com | sh
+
+      if [ ! -d /srv/salesdw/app/.git ]; then
+        git clone --branch "${repo_branch}" "${repo_url}" /srv/salesdw/app
+      fi
+      cd /srv/salesdw/app
+      mkdir -p data/incoming data/processed data/failed /srv/salesdw/pgdata /srv/salesdw/backups
+
+      cat > .env <<EOF
+      POSTGRES_USER=salesdw
+      POSTGRES_PASSWORD=${postgres_password}
+      POSTGRES_DB=sales_dw
+      SALESDW_API_KEY=${api_key}
+      WATCH_INTERVAL_SECONDS=30
+      EOF
+      chmod 600 .env
+
+      # Keep the database files on the data disk.
+      cat > docker-compose.override.yml <<EOF
+      services:
+        db:
+          volumes:
+            - /srv/salesdw/pgdata:/var/lib/postgresql/data
+      EOF
+
+      docker compose up -d --build
+      chown -R ${admin_user}:${admin_user} /srv/salesdw/app/data
+
+  - path: /etc/cron.d/salesdw-backup
+    permissions: "0644"
+    content: |
+      # Nightly warehouse backup, 14 days retention
+      15 2 * * * root cd /srv/salesdw/app && docker compose exec -T db pg_dump -U salesdw -Fc sales_dw > /srv/salesdw/backups/sales_dw_$(date +\%F).dump && find /srv/salesdw/backups -name '*.dump' -mtime +14 -delete
+
+runcmd:
+  - [bash, /usr/local/bin/salesdw-bootstrap.sh]

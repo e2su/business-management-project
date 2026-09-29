@@ -1,0 +1,152 @@
+// ============================================================================
+// SalesDW - DAX measures
+// Create a blank table named "_Measures" (Enter data -> OK) and paste each
+// measure via "New measure". Table names assume you renamed the imported
+// views as described in powerbi/README.md:
+//   mart.fact_sales -> Sales, mart.dim_date -> Date, mart.dim_customer -> Customer,
+//   mart.dim_product -> Product, mart.dim_store -> Store, mart.dim_sales_rep -> Sales Rep,
+//   mart.fact_sales_target -> Targets
+// ============================================================================
+
+// ---------- Core -------------------------------------------------------------
+Net Sales =
+CALCULATE ( SUM ( Sales[Net Sales] ), Sales[Is Revenue] = TRUE () )
+
+Gross Sales =
+CALCULATE ( SUM ( Sales[Gross Sales] ), Sales[Is Revenue] = TRUE () )
+
+Discounts =
+CALCULATE ( SUM ( Sales[Discount] ), Sales[Is Revenue] = TRUE () )
+
+Profit =
+CALCULATE ( SUM ( Sales[Profit] ), Sales[Is Revenue] = TRUE () )
+
+Margin % =
+DIVIDE ( [Profit], [Net Sales] )
+
+Units Sold =
+CALCULATE ( SUM ( Sales[Quantity] ), Sales[Is Revenue] = TRUE () )
+
+Orders =
+CALCULATE ( DISTINCTCOUNT ( Sales[Order ID] ), Sales[Is Revenue] = TRUE () )
+
+Average Order Value =
+DIVIDE ( [Net Sales], [Orders] )
+
+Units per Order =
+DIVIDE ( [Units Sold], [Orders] )
+
+Active Customers =
+CALCULATE (
+    DISTINCTCOUNT ( Customer[Customer ID] ),
+    Sales[Is Revenue] = TRUE (),
+    Customer[Customer ID] <> "GUEST"
+)
+
+Discount Rate =
+DIVIDE ( [Discounts], [Gross Sales] )
+
+// ---------- Returns & cancellations ------------------------------------------
+Returned Sales =
+CALCULATE ( SUM ( Sales[Net Sales] ), Sales[Is Returned] = TRUE () )
+
+Return Rate =
+DIVIDE ( [Returned Sales], [Net Sales] + [Returned Sales] )
+
+Cancelled Orders =
+CALCULATE ( DISTINCTCOUNT ( Sales[Order ID] ), Sales[Is Cancelled] = TRUE () )
+
+Avg Days to Ship =
+CALCULATE ( AVERAGE ( Sales[Days To Ship] ), Sales[Is Revenue] = TRUE () )
+
+// ---------- Time intelligence (Date table must be marked as date table) -------
+Net Sales MTD = TOTALMTD ( [Net Sales], 'Date'[Date] )
+Net Sales QTD = TOTALQTD ( [Net Sales], 'Date'[Date] )
+Net Sales YTD = TOTALYTD ( [Net Sales], 'Date'[Date] )
+
+Net Sales PY =
+CALCULATE ( [Net Sales], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+Net Sales YoY % =
+DIVIDE ( [Net Sales] - [Net Sales PY], [Net Sales PY] )
+
+Net Sales PM =
+CALCULATE ( [Net Sales], DATEADD ( 'Date'[Date], -1, MONTH ) )
+
+Net Sales MoM % =
+DIVIDE ( [Net Sales] - [Net Sales PM], [Net Sales PM] )
+
+Profit PY =
+CALCULATE ( [Profit], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+Net Sales Rolling 3M =
+CALCULATE ( [Net Sales], DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -3, MONTH ) )
+
+// Hides future dates from time-intelligence visuals
+Last Sales Date =
+CALCULATE ( MAX ( 'Date'[Date] ), REMOVEFILTERS ( 'Date' ), Sales )
+
+// ---------- Targets ----------------------------------------------------------
+// Targets are loaded per store (Store ID) with Category = "ALL". The company-wide
+// row has Store ID = "ALL". Use store-level rows when a store is in context.
+Target =
+IF (
+    ISFILTERED ( Store ),
+    CALCULATE ( SUM ( Targets[Target] ), Targets[Category] = "ALL", Targets[Store ID] <> "ALL" ),
+    CALCULATE ( SUM ( Targets[Target] ), Targets[Category] = "ALL", Targets[Store ID] = "ALL" )
+)
+
+Target Variance =
+[Net Sales] - [Target]
+
+Target Attainment % =
+DIVIDE ( [Net Sales], [Target] )
+
+Target Status =
+SWITCH (
+    TRUE (),
+    ISBLANK ( [Target] ), "No target",
+    [Target Attainment %] >= 1, "On / above target",
+    [Target Attainment %] >= 0.9, "Within 10%",
+    "Below target"
+)
+
+// ---------- Customers ----------------------------------------------------------
+New Customers =
+VAR CustomersInPeriod =
+    CALCULATETABLE ( VALUES ( Customer[Customer ID] ), Sales[Is Revenue] = TRUE () )
+VAR PeriodStart = MIN ( 'Date'[Date] )
+RETURN
+    COUNTROWS (
+        FILTER (
+            CustomersInPeriod,
+            CALCULATE (
+                MIN ( 'Date'[Date] ),
+                REMOVEFILTERS ( 'Date' ),
+                Sales[Is Revenue] = TRUE ()
+            ) >= PeriodStart
+        )
+    )
+
+Returning Customers =
+[Active Customers] - [New Customers]
+
+Sales per Customer =
+DIVIDE ( [Net Sales], [Active Customers] )
+
+// ---------- Ranking ----------------------------------------------------------
+Product Rank =
+RANKX ( ALLSELECTED ( Product[Product] ), [Net Sales], , DESC, DENSE )
+
+Store Rank =
+RANKX ( ALLSELECTED ( Store[Store] ), [Net Sales], , DESC, DENSE )
+
+Sales Rep Rank =
+RANKX ( ALLSELECTED ( 'Sales Rep'[Sales Rep] ), [Net Sales], , DESC, DENSE )
+
+// ---------- Data freshness ----------------------------------------------------
+Last Data Load =
+MAX ( Sales[Loaded At] )
+
+Data Freshness Label =
+"Data loaded: " & FORMAT ( [Last Data Load], "dd mmm yyyy hh:nn" )

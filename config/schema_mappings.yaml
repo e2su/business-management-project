@@ -1,0 +1,110 @@
+# ---------------------------------------------------------------------------
+# Schema mappings: how incoming files are understood.
+#
+# This is the main "flexibility" knob of the platform. When a new source system
+# sends files with different column names, you do NOT change code — you add
+# aliases here. Column headers are normalised before matching
+# (lower-case, spaces/punctuation -> "_"), so "Order No." matches "order_no".
+#
+# Any column that is not mapped is kept in the `extra_attributes` JSON column
+# of the warehouse table and recorded in meta.schema_drift, so no data is lost
+# and you can promote it to a real column later.
+#
+# Field options:
+#   type:      string | int | decimal | date | month
+#   required:  row is rejected (sent to meta.rejected_rows) if missing/invalid
+#   aliases:   alternative header names from other source systems
+#   default:   value used when the column is absent or empty
+#   values:    name of a value mapping (see value_mappings below)
+# ---------------------------------------------------------------------------
+
+entities:
+  customers:
+    file_patterns: ["customer*", "client*", "crm*"]
+    business_key: [customer_id]
+    fields:
+      customer_id:   {type: string, required: true, aliases: [cust_id, client_id, customer_no, customer_number, customer_code, id_customer]}
+      customer_name: {type: string, aliases: [name, client_name, full_name, company_name, customer]}
+      email:         {type: string, aliases: [email_address, e_mail, mail]}
+      segment:       {type: string, default: Unassigned, values: segment, aliases: [customer_segment, customer_type, tier]}
+      city:          {type: string, aliases: [town]}
+      state:         {type: string, aliases: [province, region_state, county]}
+      country:       {type: string, default: Unknown, aliases: [country_name, nation]}
+      signup_date:   {type: date, aliases: [created_at, registration_date, customer_since, join_date]}
+
+  products:
+    file_patterns: ["product*", "item*", "sku*", "catalog*"]
+    business_key: [product_id]
+    fields:
+      product_id:   {type: string, required: true, aliases: [sku, item_id, product_code, item_code, article_no]}
+      product_name: {type: string, aliases: [name, item_name, description, product]}
+      category:     {type: string, default: Uncategorized, aliases: [product_category, cat, department]}
+      subcategory:  {type: string, default: General, aliases: [sub_category, product_subcategory, family]}
+      brand:        {type: string, default: Generic, aliases: [manufacturer, make]}
+      unit_cost:    {type: decimal, default: 0, aliases: [cost, cost_price, standard_cost, purchase_price]}
+      list_price:   {type: decimal, default: 0, aliases: [price, retail_price, msrp, sale_price]}
+
+  stores:
+    file_patterns: ["store*", "branch*", "shop*", "location*", "channel*"]
+    business_key: [store_id]
+    fields:
+      store_id:    {type: string, required: true, aliases: [branch_id, shop_id, location_id, store_code, outlet_id]}
+      store_name:  {type: string, aliases: [name, branch_name, shop_name, location_name]}
+      channel:     {type: string, default: Retail, values: channel, aliases: [sales_channel, store_type]}
+      city:        {type: string, aliases: [town]}
+      region:      {type: string, default: Unassigned, aliases: [sales_region, area, territory, zone]}
+      country:     {type: string, default: Unknown, aliases: [country_name]}
+      opened_date: {type: date, aliases: [open_date, opening_date, launch_date]}
+
+  orders:
+    file_patterns: ["order*", "sale*", "transaction*", "invoice*", "pos*"]
+    business_key: [order_id, line_number]
+    fields:
+      order_id:       {type: string, required: true, aliases: [order_no, order_number, invoice_id, invoice_no, transaction_id, receipt_no]}
+      line_number:    {type: int, default: 1, aliases: [line, line_no, line_item, item_no, order_line]}
+      order_date:     {type: date, required: true, aliases: [date, invoice_date, transaction_date, sale_date, order_datetime, created_at]}
+      ship_date:      {type: date, aliases: [shipped_date, delivery_date, dispatch_date]}
+      customer_id:    {type: string, default: GUEST, aliases: [cust_id, client_id, customer_no, customer_code]}
+      product_id:     {type: string, required: true, aliases: [sku, item_id, product_code, item_code, article_no]}
+      store_id:       {type: string, default: ONLINE, aliases: [store, branch, branch_id, shop_id, location_id, store_code, outlet_id]}
+      sales_rep:      {type: string, default: Unassigned, aliases: [salesperson, sales_person, rep, cashier, employee, seller]}
+      quantity:       {type: decimal, required: true, aliases: [qty, units, quantity_sold, amount_units]}
+      unit_price:     {type: decimal, required: true, aliases: [price, sale_price, selling_price, unit_sale_price]}
+      discount:       {type: decimal, default: 0, aliases: [discount_pct, discount_rate, disc, discount_percent]}
+      shipping_cost:  {type: decimal, default: 0, aliases: [shipping, freight, delivery_fee]}
+      payment_method: {type: string, default: Unknown, values: payment_method, aliases: [payment, payment_type, tender]}
+      order_status:   {type: string, default: completed, values: order_status, aliases: [status, state]}
+      currency:       {type: string, default: USD, aliases: [currency_code, curr]}
+
+  targets:
+    file_patterns: ["target*", "budget*", "quota*", "goal*"]
+    business_key: [target_month, store_id, category]
+    fields:
+      target_month:  {type: month, required: true, aliases: [month, period, year_month, target_period]}
+      store_id:      {type: string, default: ALL, aliases: [branch_id, shop_id, location_id, store_code]}
+      category:      {type: string, default: ALL, aliases: [product_category, department]}
+      target_amount: {type: decimal, required: true, aliases: [target, budget, quota, amount, sales_target]}
+
+# Normalise free-text values coming from different systems into a fixed
+# vocabulary. Matching is case-insensitive. Unknown values pass through as-is.
+value_mappings:
+  order_status:
+    completed: [complete, completed, delivered, shipped, paid, closed, fulfilled, ok, done]
+    pending:   [pending, open, processing, new, on_hold, awaiting_payment]
+    returned:  [returned, return, refunded, refund, rma]
+    cancelled: [cancelled, canceled, void, voided, rejected]
+  channel:
+    Retail:     [retail, store, shop, brick_and_mortar, physical, in_store]
+    Online:     [online, web, ecommerce, e-commerce, website, app, mobile]
+    Wholesale:  [wholesale, b2b, distributor, reseller]
+    Marketplace: [marketplace, amazon, ebay, noon, third_party]
+  payment_method:
+    Card:          [card, credit_card, debit_card, visa, mastercard, amex, cc]
+    Cash:          [cash]
+    Bank Transfer: [bank_transfer, transfer, wire, bank]
+    Wallet:        [wallet, paypal, apple_pay, google_pay, stc_pay]
+    Invoice:       [invoice, net30, credit_terms, on_account]
+  segment:
+    Consumer:    [consumer, retail, individual, b2c, personal]
+    Corporate:   [corporate, business, enterprise, b2b, company]
+    Small Business: [small_business, smb, sme, home_office]
