@@ -51,7 +51,7 @@ docker compose exec api python -m salesdw status
 
 * API docs: http://localhost:8000/docs
 * Landing zone: drop files into `./data/incoming/`
-* Power BI: PostgreSQL `localhost:5432`, database `sales_dw` → see [`powerbi/README.md`](powerbi/README.md)
+* Power BI: PostgreSQL `localhost:5432`, database `sales_dw`, read-only user `powerbi` (password from `.env`) → see [`powerbi/README.md`](powerbi/README.md)
 
 Simulate "tomorrow's" data from a different source system (other headers, `;`
 delimiter, `Delivered`/`VOID` status spellings, a new `Loyalty Points` column,
@@ -139,7 +139,8 @@ This creates a resource group, VNet, NSG (SSH / API / PostgreSQL restricted to
 your IPs), static public IP, an Ubuntu VM and a separate managed data disk.
 Cloud-init installs Docker, clones the repo, starts the stack and schedules
 nightly `pg_dump` backups. Point Power BI (through an on-premises data gateway
-for scheduled refresh) at the `powerbi_postgres_server` output.
+for scheduled refresh) at the `powerbi_postgres_server` output and sign in as the
+read-only `powerbi` user.
 
 ## Tests
 

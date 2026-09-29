@@ -4,5 +4,6 @@ repo_url            = "https://github.com/e2su/business-management-project.git"
 repo_branch         = "main"
 postgres_password   = "change-me-to-something-long"
 api_key             = "change-me-too"
+powerbi_password    = "change-me-reporting"   # read-only login for Power BI
 ssh_public_key_path = "~/.ssh/id_rsa.pub"
 # auto_shutdown_time = "2200"   # optional, dev environments

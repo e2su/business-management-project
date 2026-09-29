@@ -31,6 +31,8 @@ class Settings:
     fx_rates: dict[str, float]
     max_reject_ratio: float
     api_key: str | None
+    powerbi_user: str
+    powerbi_password: str | None = field(repr=False)
     mappings: dict = field(repr=False)
 
     def ensure_dirs(self) -> None:
@@ -54,6 +56,8 @@ def load_settings() -> Settings:
         fx_rates={k.upper(): float(v) for k, v in (raw.get("fx_rates") or {}).items()},
         max_reject_ratio=float(raw.get("max_reject_ratio", 0.5)),
         api_key=env("SALESDW_API_KEY") or None,
+        powerbi_user=env("POWERBI_DB_USER") or "powerbi",
+        powerbi_password=env("POWERBI_DB_PASSWORD") or None,
         mappings=mappings,
     )
 

@@ -116,3 +116,32 @@ def test_bad_rows_and_bad_files(env):
     assert scalar(engine, "SELECT count(*) FROM dw.fact_sales") == 2
     assert scalar(engine, "SELECT row_number FROM meta.rejected_rows WHERE file_name = 'orders_ok.csv'") == 3
     assert len(list(settings.failed.rglob("*.csv"))) == 2
+
+
+def test_powerbi_user_can_only_read_marts(env, monkeypatch):
+    import pytest
+    from sqlalchemy import create_engine, text
+    from sqlalchemy.engine import make_url
+    from sqlalchemy.exc import ProgrammingError
+
+    from salesdw import config, db
+
+    settings, engine = env
+    monkeypatch.setenv("POWERBI_DB_USER", "pbi_test_reader")
+    monkeypatch.setenv("POWERBI_DB_PASSWORD", "It's-a-test pw")   # quote in password on purpose
+    config.get_settings.cache_clear()
+    assert "read-only user 'pbi_test_reader'" in db.init_db(engine)
+    db.init_db(engine)                                            # idempotent: ALTER on second run
+
+    url = make_url(settings.database_url).set(username="pbi_test_reader", password="It's-a-test pw")
+    reader = create_engine(url)
+    try:
+        with reader.connect() as conn:
+            assert conn.execute(text("SELECT count(*) FROM mart.fact_sales")).scalar() == 0
+            assert conn.execute(text('SELECT count(*) FROM mart.monthly_kpis')).scalar() == 0
+        for stmt in ("SELECT * FROM dw.fact_sales", "SELECT * FROM meta.etl_runs",
+                     "DELETE FROM dw.dim_store"):
+            with reader.connect() as conn, pytest.raises(ProgrammingError, match="permission denied"):
+                conn.execute(text(stmt))
+    finally:
+        reader.dispose()
