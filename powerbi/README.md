@@ -14,7 +14,7 @@ insulated from changes in the ETL and `dw` tables.
      * **DirectQuery** — every visual queries the warehouse live, so new files dropped
        into the landing zone show up within one watcher interval (~30 s). Use this for the
        "live operations" page.
-2. Sign in with the database user from `.env` (use a read-only user in production, see below).
+2. Sign in with the read-only `powerbi` login (see [section 5](#5-read-only-reporting-user)).
 3. In the Navigator pick these views:
 
 | View                      | Rename to   | Purpose                               |
@@ -90,12 +90,16 @@ visuals or use `Customer RFM` (which is always current).
   `config/schema_mappings.yaml` (and a column in the warehouse/view), or expand it
   in Power Query: `Json.Document([extra_attributes])`.
 
-## 5. Read-only reporting user (recommended)
+## 5. Read-only reporting user
 
-```sql
-CREATE ROLE powerbi LOGIN PASSWORD 'choose-a-strong-password';
-GRANT USAGE ON SCHEMA mart TO powerbi;
-GRANT SELECT ON ALL TABLES IN SCHEMA mart TO powerbi;
-ALTER DEFAULT PRIVILEGES IN SCHEMA mart GRANT SELECT ON TABLES TO powerbi;
--- views read dw/meta with the owner's rights, so no grants on those schemas are needed
-```
+Power BI should never use the admin account. The platform creates a login that
+can **only read the `mart` views**; it cannot see `dw`/`staging`/`meta` tables
+or change anything:
+
+* **Docker**: set `POWERBI_DB_USER` (default `powerbi`) and `POWERBI_DB_PASSWORD`
+  in `.env`. The user is created/updated whenever the API or watcher starts
+  (or run `python -m salesdw init-db`).
+* **Azure VM**: set `powerbi_password` in `terraform.tfvars`.
+
+Changing the password in `.env` and restarting updates it. New mart views are
+readable automatically (default privileges).

@@ -60,6 +60,12 @@ variable "api_key" {
   sensitive   = true
 }
 
+variable "powerbi_password" {
+  description = "Password of the read-only 'powerbi' database login used by Power BI / the data gateway."
+  type        = string
+  sensitive   = true
+}
+
 variable "auto_shutdown_time" {
   description = "HHMM daily shutdown time, empty string to disable."
   type        = string

@@ -11,6 +11,11 @@ output "powerbi_postgres_server" {
   value       = "${azurerm_public_ip.pip.ip_address}:5432"
 }
 
+output "powerbi_user" {
+  description = "Read-only database login for Power BI (password = var.powerbi_password)"
+  value       = "powerbi"
+}
+
 output "ssh" {
   value = "ssh ${var.admin_username}@${azurerm_public_ip.pip.ip_address}"
 }

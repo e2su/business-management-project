@@ -37,6 +37,8 @@ write_files:
       POSTGRES_PASSWORD=${postgres_password}
       POSTGRES_DB=sales_dw
       SALESDW_API_KEY=${api_key}
+      POWERBI_DB_USER=powerbi
+      POWERBI_DB_PASSWORD=${powerbi_password}
       WATCH_INTERVAL_SECONDS=30
       EOF
       chmod 600 .env

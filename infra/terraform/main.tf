@@ -166,6 +166,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     repo_branch       = var.repo_branch
     postgres_password = var.postgres_password
     api_key           = var.api_key
+    powerbi_password  = var.powerbi_password
     admin_user        = var.admin_username
   }))
 }

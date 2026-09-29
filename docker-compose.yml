@@ -4,7 +4,8 @@
 #
 #   API docs:        http://localhost:8000/docs
 #   Landing zone:    ./data/incoming   (drop CSV/Excel/JSON files here)
-#   Power BI:        PostgreSQL server "localhost:5432", database "sales_dw", schema "mart"
+#   Power BI:        PostgreSQL server "localhost:5432", database "sales_dw",
+#                    user POWERBI_DB_USER / POWERBI_DB_PASSWORD from .env (read-only)
 services:
   db:
     image: postgres:16
@@ -29,6 +30,8 @@ services:
     environment: &app-env
       DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-salesdw}:${POSTGRES_PASSWORD:-salesdw}@db:5432/${POSTGRES_DB:-sales_dw}
       SALESDW_API_KEY: ${SALESDW_API_KEY:-}
+      POWERBI_DB_USER: ${POWERBI_DB_USER:-powerbi}
+      POWERBI_DB_PASSWORD: ${POWERBI_DB_PASSWORD:-}
       WATCH_INTERVAL_SECONDS: ${WATCH_INTERVAL_SECONDS:-30}
     ports:
       - "8000:8000"
