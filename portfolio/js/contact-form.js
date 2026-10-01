@@ -25,13 +25,13 @@ window.App.contactForm = (() => {
     return allValid;
   }
 
-  function buildMailtoLink(toAddress, { name, email, message }) {
-    const subject = `Project enquiry from ${name}`;
+  function buildMailtoLink(toAddress, subjectTemplate, { name, email, message }) {
+    const subject = subjectTemplate.replace("{name}", name);
     const body = `${message}\n\n— ${name} (${email})`;
     return `mailto:${toAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  function init(toAddress) {
+  function init({ email: toAddress, t }) {
     const form = $("#contact-form");
     if (!toAddress) return; // no email configured yet: the form stays hidden
     form.hidden = false;
@@ -40,12 +40,12 @@ window.App.contactForm = (() => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       if (!validate(form)) {
-        status.textContent = "Please fill in every field with a valid email.";
+        status.textContent = t("form.invalid");
         return;
       }
       const data = Object.fromEntries(new FormData(form));
-      window.location.href = buildMailtoLink(toAddress, data);
-      status.textContent = "Opening your email app… thanks!";
+      window.location.href = buildMailtoLink(toAddress, t("form.subject"), data);
+      status.textContent = t("form.opening");
       form.reset();
     });
   }

@@ -13,9 +13,11 @@ window.App.effects = (() => {
   /** Animates a number from 0 to its `data-count` value. */
   function countUp(el) {
     const end = Number(el.dataset.count);
+    const decimals = Number(el.dataset.decimals ?? 0);
     const prefix = el.dataset.prefix ?? "";
     const suffix = el.dataset.suffix ?? "";
-    const format = (n) => `${prefix}${Math.round(n).toLocaleString()}${suffix}`;
+    const format = (n) =>
+      `${prefix}${n.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`;
 
     if (prefersReducedMotion) {
       el.textContent = format(end);
@@ -80,7 +82,7 @@ window.App.effects = (() => {
   /** A large soft glow that eases after the cursor. */
   function cursorGlow() {
     const glow = $(".cursor-glow");
-    if (!glow || !canHover || prefersReducedMotion) return;
+    if (!glow || !canHover) return;
     const target = { x: -999, y: -999 };
     const current = { ...target };
 

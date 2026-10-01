@@ -17,29 +17,38 @@ Then open http://localhost:8000. To deploy, upload the folder to any static host
 
 | What | Where |
 |---|---|
-| Name, intro, stats, projects, services, journey, socials, contact email | `js/content.js` |
+| Links, numbers, tech stacks, media, email | `js/content/shared.js` |
+| English text (and page labels under `ui`) | `js/content/en.js` |
+| Arabic text | `js/content/ar.js` |
 | Gradient colors and other design tokens | `css/tokens.css` |
 | Logos used in the marquee, thumbnails and background | `js/logos-data.js` ([Simple Icons](https://simpleicons.org), CC0) |
 
-> Everything in `js/content.js` comes from the public repos at github.com/e2su. Fields marked `TODO` (email, LinkedIn, CV, dates) are still missing; the page hides empty fields, and the contact form only appears once `email` is set.
+> All content comes from the CV and the public repos at github.com/e2su. Add a project by adding an entry to `projects` in `shared.js` and a matching `id` block in `en.js` and `ar.js`.
 
 ## File structure
 
 ```
-index.html              page markup (sections are filled from content.js)
+index.html              page markup (sections are filled from js/content/)
 css/
   tokens.css            colors, fonts, spacing; change the theme here
   base.css              reset, background layers, buttons, cards, reveal animation
   layout.css            navigation, section shell, footer
   sections.css          styles for each page section, in page order
+  features.css          case study, EdgeGuard demo, certifications, live GitHub
+  rtl.css               Arabic / right-to-left adjustments
+assets/                 CV (PDF) and the MARKET_OS dashboard screenshot
 js/
   logos-data.js         brand icon paths and colors
-  content.js            all the text on the site
+  content/              shared.js (facts) + en.js / ar.js (text)
   core.js               shared helpers, defines window.App
+  i18n.js               picks English/Arabic, builds App.content, fills labels
   pacman-background.js  animated background (Grid, Maze, Pellets, Actor, game loop)
   sections.js           renders the content into the page
   hero.js               headline animation, typewriter, pipeline + terminal preview
   projects.js           project filter and pixel-art thumbnails
+  case-study.js         project detail dialog (video, screenshot, architecture)
+  edgeguard-demo.js     interactive risk gauge using EdgeGuard's real risk map
+  github-live.js        repos, languages and recent activity from the GitHub API
   effects.js            scroll reveals, counters, card spotlight, cursor glow
   nav.js                nav bar state and mobile menu
   contact-form.js       form validation and the mailto link
@@ -53,3 +62,9 @@ Scripts are plain (non-module) files that share one global, `window.App`. That k
 The ghosts are app logos in rounded squares, in each brand's color. Pac-Man eats pellets. After a power pellet the squares turn blue and he chases them. Squares move away from the mouse pointer. To tweak speeds, counts or timings, edit `CONFIG` at the top of `js/pacman-background.js`.
 
 The site respects `prefers-reduced-motion`.
+
+## Publishing on GitHub Pages
+
+`.github/workflows/deploy-portfolio.yml` publishes this folder whenever `portfolio/` changes on `main`.
+One-time setup: repository **Settings → Pages → Source: GitHub Actions**. The site will then be at
+`https://e2su.github.io/business-management-project/`.

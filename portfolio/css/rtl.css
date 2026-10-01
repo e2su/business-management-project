@@ -1,0 +1,44 @@
+/* ─────────────────────────────────────────────────────────────
+   Arabic / right-to-left adjustments. Most layout already flips
+   automatically (flex, grid, logical properties); this file
+   handles the rest.
+   ───────────────────────────────────────────────────────────── */
+
+:root[lang="ar"] {
+  --font-body: "IBM Plex Sans Arabic", "Inter", system-ui, sans-serif;
+  --font-display: "IBM Plex Sans Arabic", "Space Grotesk", system-ui, sans-serif;
+}
+
+/* Arabic letters must stay connected: no letter-spacing or uppercase */
+:root[lang="ar"] .eyebrow,
+:root[lang="ar"] .case-study h3 { letter-spacing: 0; text-transform: none; }
+:root[lang="ar"] .section-title,
+:root[lang="ar"] .hero-title { letter-spacing: 0; line-height: 1.3; }
+/* the pixel font has no Arabic glyphs */
+:root[lang="ar"] .project-label,
+:root[lang="ar"] .timeline-period { font-family: var(--font-body); font-size: 12px; }
+
+/* Things that always read left-to-right */
+[dir="rtl"] .marquee,
+[dir="rtl"] .pipeline,
+[dir="rtl"] .terminal,
+[dir="rtl"] .mockup-bar,
+[dir="rtl"] .tags { direction: ltr; }
+[dir="rtl"] .tags { justify-content: flex-end; }
+
+/* Arrows point the other way */
+[dir="rtl"] .pill-arrow,
+[dir="rtl"] .form-footer .arrow { display: inline-block; transform: scaleX(-1); }
+[dir="rtl"] .project-arrow { transform: scaleX(-1); }
+[dir="rtl"] .project:hover .project-arrow { transform: scaleX(-1) translate(3px, -3px); }
+[dir="rtl"] .demo-class:hover { transform: translateX(-3px); }
+
+/* Positioned elements that used physical left/right */
+[dir="rtl"] .service-number { right: auto; left: 24px; }
+[dir="rtl"] .project-label { left: auto; right: 14px; }
+[dir="rtl"] .highlights li { padding-left: 0; padding-right: 18px; }
+[dir="rtl"] .highlights li::before { left: auto; right: 0; transform: scaleX(-1); }
+[dir="rtl"] .timeline { padding: 0 34px 0 0; }
+[dir="rtl"] .timeline::before { left: auto; right: 9px; }
+[dir="rtl"] .timeline-dot { left: auto; right: -31px; }
+[dir="rtl"] .case-list li::before { transform: scaleX(-1); }

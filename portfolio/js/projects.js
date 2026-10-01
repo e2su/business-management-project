@@ -1,9 +1,9 @@
 /**
  * Projects section: category filter and the pixel-art thumbnails.
  *
- * Each thumbnail is a small Space Invaders scene: an invader, the
- * project's tech logos in formation, and a cannon. It's drawn once
- * and only animates while the card is hovered.
+ * Projects without a screenshot or video get a small Space Invaders
+ * scene: an invader, the project's tech logos in formation, and a
+ * cannon. It's drawn once and only animates while the card is hovered.
  */
 window.App.projects = (() => {
   "use strict";
@@ -37,7 +37,7 @@ window.App.projects = (() => {
 
       const category = button.dataset.category;
       $$(".project").forEach((card) => {
-        const visible = category === "All" || card.dataset.category === category;
+        const visible = category === "all" || card.dataset.category === category;
         card.hidden = !visible;
         if (visible) replayPopAnimation(card);
       });

@@ -42,6 +42,7 @@ button { font: inherit; color: inherit; }
   z-index: 0;
   pointer-events: none;
   opacity: 0.55;
+  filter: blur(40px);
   background:
     radial-gradient(40% 50% at 30% 30%, color-mix(in srgb, var(--g1) 45%, transparent), transparent 70%),
     radial-gradient(35% 45% at 70% 25%, color-mix(in srgb, var(--g2) 35%, transparent), transparent 70%),
@@ -141,8 +142,8 @@ main, .nav, .footer { position: relative; z-index: 2; }
   box-shadow: 0 14px 40px -8px color-mix(in srgb, var(--g2) 85%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.btn-ghost { background: rgba(10, 10, 12, 0.7); border-color: var(--border-strong); }
-.btn-ghost:hover { background: rgba(30, 30, 34, 0.85); }
+.btn-ghost { background: rgba(255, 255, 255, 0.04); border-color: var(--border-strong); backdrop-filter: blur(8px); }
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.08); }
 
 /* ── Card with pointer spotlight ───────────────────────────── */
 /* --pointer-x / --pointer-y are set from js/effects.js */
@@ -154,6 +155,8 @@ main, .nav, .footer { position: relative; z-index: 2; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   transition: border-color 0.3s, transform 0.3s;
 }
 .card::before,
