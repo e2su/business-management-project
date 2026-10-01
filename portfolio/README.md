@@ -36,7 +36,7 @@ css/
   sections.css          styles for each page section, in page order
   features.css          case study, EdgeGuard demo, certifications, live GitHub
   rtl.css               Arabic / right-to-left adjustments
-assets/                 CV (PDF) and the MARKET_OS dashboard screenshot
+assets/                 CV, SCE certificate, KAUST badge, MARKET_OS screenshot
 js/
   logos-data.js         brand icon paths and colors
   content/              shared.js (facts) + en.js / ar.js (text)

@@ -132,7 +132,17 @@ window.PORTFOLIO_CONTENT.ar = {
     "ibm-de": { title: "شهادة IBM الاحترافية في هندسة البيانات", text: "خطوط البيانات، وETL، وقواعد بيانات SQL وNoSQL، ومستودعات البيانات، وأدوات البيانات الضخمة." },
     pl300: { title: "Microsoft PL-300: محلل بيانات Power BI", text: "تجهيز البيانات ونمذجتها وتصويرها في Power BI باستخدام DAX وPower Query." },
     kaust: { title: "شهادة KAUST في الذكاء الاصطناعي", text: "اجتياز مستويين · نوفمبر – ديسمبر 2025." },
-    sce: { title: "الهيئة السعودية للمهندسين", text: "مهندس معتمد — هندسة الحاسب." },
+    sce: { title: "اعتماد مهني — مهندس", text: "هندسة الحاسب الآلي · معتمد منذ فبراير 2026 وساري حتى أغسطس 2027." },
+    "kaust-python": { title: "المقررات التمهيدية للذكاء الاصطناعي — أساسيات Python", text: "أساسيات Python ضمن مسار الذكاء الاصطناعي في أكاديمية كاوست." },
+  },
+
+  // يظهر عندما لا يوجد وصف للمستودع على GitHub
+  repoDescriptions: {
+    "business-management-project": "SalesDW: منصة تحليل مبيعات مستضافة ذاتيًا مع ETL متكيّف ومستودع PostgreSQL بنموذج النجمة وواجهة FastAPI وPower BI. ويحتوي أيضًا على هذا الموقع.",
+    "market-pipline": "MARKET_OS: بيانات سوق لحظية من Binance وAlpha Vantage عبر Kafka وPySpark إلى S3 وRedshift ولوحة Streamlit.",
+    "graduation-project": "EdgeGuard: كشف اختراقات بتعلّم الآلة على Raspberry Pi 5 يجمع Snort 3 مع Random Forest ودرجة خطورة من 0 إلى 100.",
+    "KAUST-Ai-project": "مختبرات أكاديمية كاوست للذكاء الاصطناعي: تحليل استكشافي، وانحدار، وتصنيف، وشبكات PyTorch، وتعلّم غير موجَّه.",
+    "Analysing_Datasets": "مساحة عمل لتحليل استكشافي لبيانات عامة (قيد العمل).",
   },
   languages: [
     { name: "العربية", level: "اللغة الأم" },
@@ -179,6 +189,7 @@ window.PORTFOLIO_CONTENT.ar = {
     "case.code": "عرض الكود",
     "case.video": "شاهد على YouTube",
     "case.close": "إغلاق",
+    "certs.view": "عرض الشهادة",
     "demo.eyebrow": "جرّبه",
     "demo.title": 'محرك المخاطر في <span class="gradient-text">EdgeGuard</span>.',
     "demo.intro": "اختر نوع حركة لترى كيف يقيّمها EdgeGuard. الدرجات ومستويات الخطورة هي نفسها المستخدمة في محرك الاستدلال الحقيقي للمشروع.",

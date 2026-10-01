@@ -131,15 +131,25 @@ window.App.sections = (() => {
       .join("");
   }
 
-  function renderCertifications(certifications, languages) {
+  function renderCertifications(certifications, languages, t) {
+    const badge = (cert) =>
+      cert.image
+        ? `<img class="cert-badge cert-badge-image" src="${esc(cert.image)}" alt="" loading="lazy" />`
+        : `<span class="cert-badge">${esc(cert.badge)}</span>`;
+    const link = (cert) =>
+      cert.url
+        ? `<a class="cert-link" href="${esc(cert.url)}" target="_blank" rel="noopener">${esc(t("certs.view"))} <span aria-hidden="true">↗</span></a>`
+        : "";
+
     $("#certs-grid").innerHTML = certifications
       .map((cert, i) => `
         <article class="card cert reveal" style="${stagger(i, 70)}">
-          <span class="cert-badge">${esc(cert.badge)}</span>
+          ${badge(cert)}
           <div>
             <h3>${esc(cert.title)}</h3>
             <p class="cert-issuer">${esc(cert.issuer)}</p>
             <p>${esc(cert.text)}</p>
+            ${link(cert)}
           </div>
         </article>`)
       .join("");
@@ -184,7 +194,7 @@ window.App.sections = (() => {
     renderProjects(content.projects, content.t);
     renderProcess(content.process);
     renderJourney(content.journey);
-    renderCertifications(content.certifications, content.languages);
+    renderCertifications(content.certifications, content.languages, content.t);
     renderContactLinks(content);
     renderSocials(content);
   }

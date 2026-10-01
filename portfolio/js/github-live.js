@@ -76,7 +76,7 @@ window.App.githubLive = (() => {
         <li>
           <a href="${esc(repo.html_url)}" target="_blank" rel="noopener">
             <b>${esc(repo.name)}</b>
-            <p>${esc(repo.description || t("github.noDescription"))}</p>
+            <p>${esc(repo.description || content.repoDescriptions[repo.name] || t("github.noDescription"))}</p>
             <span class="repo-meta">
               ${repo.language ? `<i style="background: ${LANGUAGE_COLORS[repo.language] ?? DEFAULT_COLOR}"></i>${esc(repo.language)} · ` : ""}
               ${esc(timeAgo(repo.pushed_at, lang))}

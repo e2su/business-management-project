@@ -42,6 +42,7 @@ window.App.i18n = (() => {
       projects: shared.projects.map((project) => ({ ...project, ...text.projects[project.id] })),
       certifications: shared.certifications.map((cert) => ({ ...cert, ...text.certifications[cert.id] })),
       edgeguard: { ...shared.edgeguard, ...text.edgeguard },
+      repoDescriptions: { ...fallback.repoDescriptions, ...text.repoDescriptions },
       t: (key) => text.ui[key] ?? fallback.ui[key] ?? key,
     };
   }

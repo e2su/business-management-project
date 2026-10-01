@@ -111,10 +111,12 @@ window.PORTFOLIO_CONTENT.shared = {
     lowConfidenceThreshold: 0.6, // below this, the engine escalates the risk to 95
   },
 
+  // `image` replaces the text badge; `url` adds a "View certificate" link
   certifications: [
+    { id: "sce", issuer: "Saudi Council of Engineers", badge: "SCE", url: "assets/SCE_Professional_Accreditation.pdf" },
     { id: "ibm-de", issuer: "IBM", badge: "IBM" },
+    { id: "kaust", issuer: "KAUST Academy", badge: "AI" },
+    { id: "kaust-python", issuer: "KAUST Academy · Coursera", image: "assets/kaust-python-basics-badge.png" },
     { id: "pl300", issuer: "Microsoft", badge: "PL-300" },
-    { id: "kaust", issuer: "KAUST", badge: "AI" },
-    { id: "sce", issuer: "SCE", badge: "SCE" },
   ],
 };

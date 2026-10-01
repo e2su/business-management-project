@@ -132,7 +132,17 @@ window.PORTFOLIO_CONTENT.en = {
     "ibm-de": { title: "IBM Data Engineering Professional Certificate", text: "Data pipelines, ETL, SQL and NoSQL databases, data warehousing and big-data tools." },
     pl300: { title: "Microsoft PL-300: Power BI Data Analyst", text: "Preparing, modelling and visualising data in Power BI with DAX and Power Query." },
     kaust: { title: "KAUST AI Certificate", text: "Passed two levels · Nov – Dec 2025." },
-    sce: { title: "Saudi Council of Engineers", text: "Accredited engineer — Computer Engineering." },
+    sce: { title: "Professional Accreditation — Engineer", text: "Computer Engineering · accredited since Feb 2026, valid until Aug 2027." },
+    "kaust-python": { title: "Prerequisite Courses of AI — Python Basics", text: "Python foundations for the KAUST Academy AI track." },
+  },
+
+  // Shown when a GitHub repository has no description of its own
+  repoDescriptions: {
+    "business-management-project": "SalesDW: self-hosted sales analytics platform with an adaptive ETL, a PostgreSQL star schema, a FastAPI API and Power BI. Also home to this portfolio.",
+    "market-pipline": "MARKET_OS: real-time market data from Binance and Alpha Vantage through Kafka and PySpark into S3, Redshift and a Streamlit dashboard.",
+    "graduation-project": "EdgeGuard: ML intrusion detection on a Raspberry Pi 5 combining Snort 3 with a Random Forest and a 0–100 risk score.",
+    "KAUST-Ai-project": "KAUST Academy AI labs: EDA, regression, classification, PyTorch neural networks and unsupervised learning.",
+    "Analysing_Datasets": "Workspace for exploratory analysis of public datasets (in progress).",
   },
   languages: [
     { name: "Arabic", level: "Native" },
@@ -180,6 +190,7 @@ window.PORTFOLIO_CONTENT.en = {
     "case.code": "View code",
     "case.video": "Watch on YouTube",
     "case.close": "Close",
+    "certs.view": "View certificate",
     "demo.eyebrow": "Try it",
     "demo.title": 'EdgeGuard <span class="gradient-text">risk engine</span>.',
     "demo.intro": "Pick a traffic class to see how EdgeGuard scores it. The scores and severity tiers are the real ones from the project's inference engine.",
