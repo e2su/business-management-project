@@ -1,0 +1,203 @@
+/* ─────────────────────────────────────────────────────────────
+   Base: reset, background layers, utilities, buttons, cards and
+   the reveal-on-scroll animation.
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img, svg, canvas { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+::selection { background: var(--g2); color: #fff; }
+
+:focus-visible { outline: 2px solid var(--g2); outline-offset: 3px; }
+
+/* ── Background layers (fixed, behind the page) ────────────── */
+.pacman-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.bg-glow {
+  position: fixed;
+  inset: -20vh -10vw auto;
+  height: 90vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background:
+    radial-gradient(40% 50% at 30% 30%, color-mix(in srgb, var(--g1) 45%, transparent), transparent 70%),
+    radial-gradient(35% 45% at 70% 25%, color-mix(in srgb, var(--g2) 35%, transparent), transparent 70%),
+    radial-gradient(30% 40% at 55% 55%, color-mix(in srgb, var(--g3) 22%, transparent), transparent 70%);
+  will-change: transform;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.bg-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 520px;
+  height: 520px;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--g2) 14%, transparent), transparent 65%);
+  transform: translate(-50%, -50%) translate(var(--glow-x, -999px), var(--glow-y, -999px));
+}
+
+/* Page content sits above the background layers */
+main, .nav, .footer { position: relative; z-index: 2; }
+
+@keyframes drift {
+  to { transform: translate3d(3vw, 4vh, 0) scale(1.08); }
+}
+
+/* ── Utilities ─────────────────────────────────────────────── */
+/* Gradient text that slowly sweeps from one end to the other and back.
+   `box-decoration-break: clone` keeps the colours continuous when
+   the text wraps onto a second line. */
+.gradient-text {
+  background-image: var(--gradient-loop);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  animation: gradient-sweep 8s ease-in-out infinite alternate;
+}
+@keyframes gradient-sweep {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
+.eyebrow {
+  display: inline-block;
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-sm { padding: 9px 16px; font-size: 14px; }
+
+.btn-primary {
+  color: #fff;
+  background: var(--gradient);
+  background-size: 160% auto;
+  box-shadow: 0 8px 30px -8px color-mix(in srgb, var(--g2) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn-primary:hover {
+  background-position: right center;
+  box-shadow: 0 14px 40px -8px color-mix(in srgb, var(--g2) 85%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn-ghost { background: rgba(10, 10, 12, 0.7); border-color: var(--border-strong); }
+.btn-ghost:hover { background: rgba(30, 30, 34, 0.85); }
+
+/* ── Card with pointer spotlight ───────────────────────────── */
+/* --pointer-x / --pointer-y are set from js/effects.js */
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+/* soft fill */
+.card::before {
+  z-index: -1;
+  background: radial-gradient(420px circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    color-mix(in srgb, var(--g2) 16%, transparent), transparent 45%);
+}
+/* glowing border */
+.card::after {
+  padding: 1px;
+  background: radial-gradient(300px circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+    var(--g2), var(--g1) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+.card:hover::before,
+.card:hover::after { opacity: 1; }
+
+/* ── Reveal on scroll (class added by js/effects.js) ───────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+}
+.reveal.in-view { opacity: 1; transform: none; }
+
+/* ── Reduced motion ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}

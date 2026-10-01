@@ -1,29 +1,55 @@
 # Portfolio site
 
-A one-page personal portfolio with a black background, a three-color gradient theme and retro-arcade animations. It's plain HTML, CSS and JS, with no build step.
+A one-page personal portfolio with a black background, a three-color gradient theme and a Pac-Man style animated background. It's plain HTML, CSS and JavaScript, with no build step.
 
 ## Run it
 
+Double-click `index.html`, or serve the folder:
+
 ```bash
 cd portfolio
-python3 -m http.server 8000   # then open http://localhost:8000
+python -m http.server 8000    # Windows: python or py; macOS/Linux: python3
 ```
 
-To deploy, upload the folder to any static host, such as GitHub Pages, Netlify or Vercel.
+Then open http://localhost:8000. To deploy, upload the folder to any static host (GitHub Pages, Netlify, Vercel).
 
 ## Make it yours
 
 | What | Where |
 |---|---|
-| Name, intro, projects, services, testimonials, FAQ, socials, contact email | `js/data.js` |
-| Gradient colors (used everywhere, including the games) | `--g1`, `--g2`, `--g3` at the top of `css/styles.css` |
-| Logos used by the games and the stack list | `js/logos.js` ([Simple Icons](https://simpleicons.org), CC0) |
+| Name, intro, stats, projects, services, testimonials, FAQ, socials, contact email | `js/content.js` |
+| Gradient colors and other design tokens | `css/tokens.css` |
+| Logos used in the marquee, thumbnails and background | `js/logos-data.js` ([Simple Icons](https://simpleicons.org), CC0) |
 
-## The arcade bits
+> ⚠ Most of `js/content.js` is placeholder text: stats, testimonials and every project except SalesDW. Replace it before publishing.
 
-- **Background (`js/arcade.js`)**: a Pac-Man maze fills the screen. The ghosts are app logos. Pac-Man eats pellets and grabs power pellets, and then hunts the logos. Ghosts flee from your mouse.
-- **Play mode**: click **Play** in the nav, or type the Konami code (↑ ↑ ↓ ↓ ← → ← → B A). Steer with the arrow keys or WASD (swipe on phones), and press Esc to exit.
-- **Stack section (`js/kong.js`)**: a Donkey Kong-style level. A pixel "bug" throws tech logos down girders and ladders into `/dev/null`, and a little dev jumps over them. Click a rolling logo to smash it.
-- **Project thumbnails**: Space Invaders formations built from each project's tech logos. They march when you hover.
+## File structure
 
-The site respects `prefers-reduced-motion`. The stack level only animates while it's on screen.
+```
+index.html              page markup (sections are filled from content.js)
+css/
+  tokens.css            colors, fonts, spacing; change the theme here
+  base.css              reset, background layers, buttons, cards, reveal animation
+  layout.css            navigation, section shell, footer
+  sections.css          styles for each page section, in page order
+js/
+  logos-data.js         brand icon paths and colors
+  content.js            all the text on the site
+  core.js               shared helpers, defines window.App
+  pacman-background.js  animated background (Grid, Maze, Pellets, Actor, game loop)
+  sections.js           renders the content into the page
+  hero.js               headline animation, typewriter, dashboard mockup
+  projects.js           project filter and pixel-art thumbnails
+  effects.js            scroll reveals, counters, card spotlight, cursor glow
+  nav.js                nav bar state and mobile menu
+  contact-form.js       form validation and the mailto link
+  main.js               starts everything
+```
+
+Scripts are plain (non-module) files that share one global, `window.App`. That keeps the site working when `index.html` is opened straight from disk. Load order is set at the bottom of `index.html`.
+
+## Background animation
+
+The ghosts are app logos in rounded squares, in each brand's color. Pac-Man eats pellets. After a power pellet the squares turn blue and he chases them. Squares move away from the mouse pointer. To tweak speeds, counts or timings, edit `CONFIG` at the top of `js/pacman-background.js`.
+
+The site respects `prefers-reduced-motion`.

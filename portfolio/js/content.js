@@ -1,6 +1,11 @@
 // ─────────────────────────────────────────────────────────────
 // All portfolio content lives here. Edit this file to make the
 // site yours — no HTML changes needed.
+//
+// ⚠ PLACEHOLDER CONTENT: apart from the SalesDW project (this
+// repository), the stats, projects, testimonials and email below
+// are made-up examples. Replace them with your real details
+// before publishing.
 // ─────────────────────────────────────────────────────────────
 window.PORTFOLIO = {
   name: "Khalid Noah",
@@ -19,6 +24,7 @@ window.PORTFOLIO = {
     { label: "Email", url: "mailto:hello@yourdomain.com" },
   ],
 
+  // PLACEHOLDER numbers — replace with your own
   stats: [
     { value: 5, suffix: "+", label: "Years building" },
     { value: 40, suffix: "+", label: "Projects shipped" },
@@ -120,6 +126,7 @@ window.PORTFOLIO = {
     { step: "03", title: "Ship & support", text: "Production rollout, docs, monitoring and a handover your team owns." },
   ],
 
+  // PLACEHOLDER quotes — replace with real ones (or remove the section)
   testimonials: [
     {
       quote: "Our month-end reporting went from three days of spreadsheets to a dashboard that refreshes itself.",

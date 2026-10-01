@@ -3,29 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Khalid Noah — Portfolio</title>
+  <title>Portfolio</title>
   <meta name="description" content="Data engineer and full-stack developer building warehouses, pipelines, dashboards and web apps." />
   <meta name="theme-color" content="#000000" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 16 L30 8 A16 16 0 1 0 30 24 Z' fill='%23a855f7'/></svg>" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/sections.css" />
 </head>
 <body>
-  <!-- Retro arcade background (Pac-Man world) -->
-  <canvas id="arcade" aria-hidden="true"></canvas>
+  <!-- Decorative background layers -->
+  <canvas id="pacman-bg" class="pacman-bg" aria-hidden="true"></canvas>
   <div class="bg-glow" aria-hidden="true"></div>
   <div class="bg-grain" aria-hidden="true"></div>
   <div class="cursor-glow" aria-hidden="true"></div>
 
-  <!-- Play-mode HUD -->
-  <div class="hud" aria-live="polite">
-    <span>1UP <b id="hud-score">0</b></span>
-    <span class="hud-hint">ARROWS / WASD TO MOVE · ESC TO EXIT</span>
-    <span>LIVES <b id="hud-lives">3</b></span>
-  </div>
-
+  <!-- ═══════════ Navigation ═══════════ -->
   <header class="nav" id="nav">
     <a href="#top" class="brand" aria-label="Home">
       <span class="brand-mark" data-initials></span>
@@ -35,75 +34,79 @@
       <a href="#about">About</a>
       <a href="#services">Services</a>
       <a href="#work">Work</a>
-      <a href="#stack">Stack</a>
+      <a href="#process">Process</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="nav-actions">
-      <button class="btn btn-ghost btn-sm play-btn" id="play-btn" type="button" title="Play the background (or type the Konami code)">
-        <span class="pix">▶</span> Play
-      </button>
       <a href="#contact" class="btn btn-primary btn-sm">Hire me</a>
-      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <span></span><span></span>
+      </button>
     </div>
   </header>
 
   <main id="top">
-    <!-- HERO -->
+    <!-- ═══════════ Hero ═══════════ -->
     <section class="hero">
       <a href="#contact" class="pill reveal">
         <span class="pill-dot"></span>
-        <span class="pix">INSERT COIN</span>
-        <span class="pill-sep"></span>
         Open for new projects
         <span aria-hidden="true">→</span>
       </a>
+
       <h1 class="hero-title reveal" id="hero-title"></h1>
-      <p class="hero-sub reveal">
-        Hi, I'm <strong data-name></strong> — <span class="typed" id="typed"></span><span class="caret">|</span><br />
+
+      <p class="hero-subtitle reveal">
+        Hi, I'm <strong data-name></strong> — <span class="typed-role" id="typed-role"></span><span class="caret" aria-hidden="true">|</span><br />
         <span id="hero-intro"></span>
       </p>
-      <div class="hero-ctas reveal">
+
+      <div class="hero-actions reveal">
         <a href="#work" class="btn btn-primary">View my work <span aria-hidden="true">↗</span></a>
         <a href="#contact" class="btn btn-ghost">Let's talk</a>
       </div>
 
-      <!-- Dashboard mockup (like the template's product shot) -->
+      <!-- Product-style dashboard preview -->
       <div class="mockup reveal" id="mockup">
         <div class="mockup-bar">
-          <span></span><span></span><span></span>
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
           <div class="mockup-url">portfolio.dev/dashboard</div>
         </div>
         <div class="mockup-body">
-          <aside class="mockup-side">
-            <div class="ms-item active"></div><div class="ms-item"></div><div class="ms-item"></div><div class="ms-item"></div><div class="ms-item short"></div>
+          <aside class="mockup-sidebar" aria-hidden="true">
+            <div class="sidebar-item active"></div>
+            <div class="sidebar-item"></div>
+            <div class="sidebar-item"></div>
+            <div class="sidebar-item"></div>
+            <div class="sidebar-item short"></div>
           </aside>
           <div class="mockup-main">
             <div class="kpis">
-              <div class="kpi"><small>Revenue</small><b data-count="482" data-prefix="$" data-suffix="k">$0k</b><em class="up">+18.2%</em></div>
-              <div class="kpi"><small>Orders</small><b data-count="12940">0</b><em class="up">+9.4%</em></div>
-              <div class="kpi"><small>Pipelines</small><b data-count="36">0</b><em class="ok">all green</em></div>
+              <div class="kpi"><small>Revenue</small><b data-count="482" data-prefix="$" data-suffix="k">$0k</b><em class="kpi-up">+18.2%</em></div>
+              <div class="kpi"><small>Orders</small><b data-count="12940">0</b><em class="kpi-up">+9.4%</em></div>
+              <div class="kpi"><small>Pipelines</small><b data-count="36">0</b><em class="kpi-ok">all green</em></div>
             </div>
             <div class="chart">
-              <div class="chart-head"><span>Sales by month</span><span class="pix tiny">LIVE</span></div>
-              <div class="bars" id="bars"></div>
+              <div class="chart-header"><span>Sales by month</span><span class="live-badge">LIVE</span></div>
+              <div class="chart-bars" id="chart-bars"></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- LOGO MARQUEE -->
-    <section class="marquee-wrap" aria-label="Tools I use">
-      <p class="eyebrow center">Tools I ship with every day</p>
+    <!-- ═══════════ Logo marquee ═══════════ -->
+    <section class="marquee-section" aria-label="Tools I use">
+      <p class="marquee-caption">Tools I ship with every day</p>
       <div class="marquee"><div class="marquee-track" id="marquee"></div></div>
     </section>
 
-    <!-- ABOUT -->
+    <!-- ═══════════ About ═══════════ -->
     <section class="section" id="about">
       <div class="about-grid">
         <div class="reveal">
           <p class="eyebrow">About</p>
-          <h2 class="section-title">Engineer by trade,<br /><span class="grad-text">product builder</span> by habit.</h2>
+          <h2 class="section-title">Engineer by trade,<br /><span class="gradient-text">product builder</span> by habit.</h2>
         </div>
         <div class="reveal">
           <p class="lead">I work where data meets software: modelling warehouses, writing the pipelines that feed them, and building the apps and dashboards that sit on top. I care about boring reliability, clear docs and interfaces people enjoy using.</p>
@@ -112,82 +115,75 @@
       </div>
     </section>
 
-    <!-- SERVICES (bento) -->
+    <!-- ═══════════ Services ═══════════ -->
     <section class="section" id="services">
-      <div class="section-head reveal">
+      <div class="section-header reveal">
         <p class="eyebrow">Services</p>
-        <h2 class="section-title">Everything from the <span class="grad-text">raw CSV</span><br />to the boardroom chart.</h2>
+        <h2 class="section-title">Everything from the <span class="gradient-text">raw CSV</span><br />to the boardroom chart.</h2>
       </div>
-      <div class="bento" id="bento"></div>
+      <div class="services-grid" id="services-grid"></div>
     </section>
 
-    <!-- WORK -->
+    <!-- ═══════════ Work ═══════════ -->
     <section class="section" id="work">
-      <div class="section-head row reveal">
+      <div class="section-header split reveal">
         <div>
           <p class="eyebrow">Selected work</p>
-          <h2 class="section-title">Projects I'm <span class="grad-text">proud of</span>.</h2>
+          <h2 class="section-title">Projects I'm <span class="gradient-text">proud of</span>.</h2>
         </div>
-        <div class="filters" id="filters" role="tablist" aria-label="Filter projects"></div>
+        <div class="filters" id="project-filters" role="tablist" aria-label="Filter projects"></div>
       </div>
-      <div class="projects" id="projects"></div>
+      <div class="projects-grid" id="projects-grid"></div>
     </section>
 
-    <!-- PROCESS -->
+    <!-- ═══════════ Process ═══════════ -->
     <section class="section" id="process">
-      <div class="section-head reveal center">
+      <div class="section-header centered reveal">
         <p class="eyebrow">How I work</p>
-        <h2 class="section-title">Three steps. <span class="grad-text">No surprises.</span></h2>
+        <h2 class="section-title">Three steps. <span class="gradient-text">No surprises.</span></h2>
       </div>
-      <div class="steps" id="steps"></div>
+      <div class="steps-grid" id="process-steps"></div>
     </section>
 
-    <!-- STACK — Donkey-Kong style level -->
-    <section class="section" id="stack">
-      <div class="section-head row reveal">
-        <div>
-          <p class="eyebrow pix-eyebrow">LEVEL 2 · THE STACK</p>
-          <h2 class="section-title">My tech stack, <span class="grad-text">rolling in</span>.</h2>
-          <p class="muted">A bug at the top keeps throwing tools at me. Click a rolling logo to smash it.</p>
-        </div>
-        <div class="kong-score pix">SMASHED <b id="kong-score">000</b></div>
-      </div>
-      <div class="kong-frame reveal">
-        <canvas id="kong" aria-label="Retro arcade level with tech logos rolling down girders"></canvas>
-        <div class="kong-tip" id="kong-tip"></div>
-      </div>
-      <div class="chips" id="chips"></div>
-    </section>
-
-    <!-- TESTIMONIALS -->
+    <!-- ═══════════ Testimonials ═══════════ -->
     <section class="section" id="testimonials">
-      <div class="section-head reveal center">
+      <div class="section-header centered reveal">
         <p class="eyebrow">Kind words</p>
-        <h2 class="section-title">What clients <span class="grad-text">say</span>.</h2>
+        <h2 class="section-title">What clients <span class="gradient-text">say</span>.</h2>
       </div>
-      <div class="quotes" id="quotes"></div>
+      <div class="testimonials-grid" id="testimonials-grid"></div>
     </section>
 
-    <!-- FAQ -->
+    <!-- ═══════════ FAQ ═══════════ -->
     <section class="section narrow" id="faq">
-      <div class="section-head reveal center">
+      <div class="section-header centered reveal">
         <p class="eyebrow">FAQ</p>
-        <h2 class="section-title">Questions, <span class="grad-text">answered</span>.</h2>
+        <h2 class="section-title">Questions, <span class="gradient-text">answered</span>.</h2>
       </div>
-      <div class="faq" id="faq-list"></div>
+      <div class="faq-list" id="faq-list"></div>
     </section>
 
-    <!-- CTA / CONTACT -->
+    <!-- ═══════════ Contact ═══════════ -->
     <section class="section" id="contact">
       <div class="cta reveal">
         <div class="cta-glow" aria-hidden="true"></div>
-        <p class="pix cta-kicker">PLAYER 2 — READY?</p>
-        <h2 class="section-title">Got a project in mind?<br /><span class="grad-text">Let's build it.</span></h2>
-        <form class="contact" id="contact-form" novalidate>
-          <div class="field"><label for="cf-name">Name</label><input id="cf-name" name="name" required autocomplete="name" placeholder="Your name" /></div>
-          <div class="field"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" /></div>
-          <div class="field full"><label for="cf-msg">Message</label><textarea id="cf-msg" name="message" rows="4" required placeholder="Tell me about the project…"></textarea></div>
-          <div class="field full form-foot">
+        <p class="eyebrow">Contact</p>
+        <h2 class="section-title">Got a project in mind?<br /><span class="gradient-text">Let's build it.</span></h2>
+
+        <form class="contact-form" id="contact-form" novalidate>
+          <div class="field">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" required autocomplete="name" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" required autocomplete="email" placeholder="you@company.com" />
+          </div>
+          <div class="field full">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" rows="4" required placeholder="Tell me about the project…"></textarea>
+          </div>
+          <div class="field full form-footer">
             <span class="form-status" id="form-status" role="status"></span>
             <button class="btn btn-primary" type="submit">Send message <span aria-hidden="true">→</span></button>
           </div>
@@ -196,18 +192,29 @@
     </section>
   </main>
 
+  <!-- ═══════════ Footer ═══════════ -->
   <footer class="footer">
     <div class="footer-inner">
       <a href="#top" class="brand"><span class="brand-mark" data-initials></span><span class="brand-name" data-name></span></a>
       <div class="footer-links" id="socials"></div>
-      <p class="muted small">© <span id="year"></span> <span data-name></span>. <span class="pix tiny">GAME OVER? NEVER.</span></p>
+      <p class="muted small">© <span id="year"></span> <span data-name></span></p>
     </div>
   </footer>
 
-  <script src="js/logos.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/arcade.js"></script>
-  <script src="js/kong.js"></script>
+  <!-- Data -->
+  <script src="js/logos-data.js"></script>
+  <script src="js/content.js"></script>
+  <!-- Shared helpers (defines window.App) -->
+  <script src="js/core.js"></script>
+  <!-- Features -->
+  <script src="js/pacman-background.js"></script>
+  <script src="js/sections.js"></script>
+  <script src="js/hero.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/contact-form.js"></script>
+  <!-- Start everything -->
   <script src="js/main.js"></script>
 </body>
 </html>
