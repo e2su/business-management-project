@@ -13,6 +13,8 @@ window.App.sections = (() => {
     chart: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',
     code: '<path d="M8 6l-6 6 6 6"/><path d="M16 6l6 6-6 6"/><path d="M14 4l-4 16"/>',
     cloud: '<path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 19.5 10 4 4 0 0 1 18 18z"/>',
+    brain: '<circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/>',
+    shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   };
 
   /** Inline style that staggers reveal animations within a group. */
@@ -23,6 +25,7 @@ window.App.sections = (() => {
     $$("[data-name]").forEach((el) => (el.textContent = content.name));
     $$("[data-initials]").forEach((el) => (el.textContent = content.initials));
     $("#hero-intro").textContent = content.intro;
+    $("#about-text").textContent = content.about;
     $("#year").textContent = new Date().getFullYear();
     document.title = `${content.name} — ${content.role}`;
   }
@@ -77,6 +80,7 @@ window.App.sections = (() => {
           <div class="project-body">
             <h3>${esc(project.title)}<span class="project-arrow" aria-hidden="true">↗</span></h3>
             <p>${esc(project.text)}</p>
+            ${project.highlights?.length ? `<ul class="highlights">${project.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
             <div class="tags">${project.tags.map((tag) => `<span class="tag">${esc(tag)}</span>`).join("")}</div>
           </div>
         </a>`)
@@ -95,27 +99,32 @@ window.App.sections = (() => {
       .join("");
   }
 
-  function renderTestimonials(testimonials) {
-    $("#testimonials-grid").innerHTML = testimonials
-      .map((t, i) => `
-        <figure class="card testimonial reveal" style="${stagger(i, 90)}">
-          <div class="stars" aria-label="5 stars">★★★★★</div>
-          <blockquote>“${esc(t.quote)}”</blockquote>
-          <figcaption class="author">
-            <span class="avatar">${esc(initials(t.name))}</span>
-            <div><b>${esc(t.name)}</b><span>${esc(t.role)}</span></div>
-          </figcaption>
-        </figure>`)
+  function renderJourney(entries) {
+    $("#timeline").innerHTML = entries
+      .map((entry, i) => `
+        <li class="timeline-item reveal" style="${stagger(i, 90)}">
+          <span class="timeline-dot" aria-hidden="true"></span>
+          <div class="card timeline-card">
+            ${entry.period ? `<span class="timeline-period">${esc(entry.period)}</span>` : ""}
+            <h3>${esc(entry.title)}</h3>
+            <p class="timeline-place">${esc(entry.place)}</p>
+            <p>${esc(entry.text)}</p>
+          </div>
+        </li>`)
       .join("");
   }
 
-  function renderFaq(questions) {
-    $("#faq-list").innerHTML = questions
-      .map((item, i) => `
-        <details class="reveal" ${i === 0 ? "open" : ""}>
-          <summary>${esc(item.q)}</summary>
-          <div class="faq-answer">${esc(item.a)}</div>
-        </details>`)
+  /** Buttons in the contact section: email (if set), CV (if set) and socials. */
+  function renderContactLinks(content) {
+    const links = [
+      content.email && { label: "Email me", url: `mailto:${content.email}`, primary: true },
+      content.resumeUrl && { label: "Download CV", url: content.resumeUrl },
+      ...content.socials,
+    ].filter(Boolean);
+    $("#contact-links").innerHTML = links
+      .map((link, i) => `
+        <a class="btn ${link.primary || (!content.email && i === 0) ? "btn-primary" : "btn-ghost"}"
+           href="${esc(link.url)}" ${linkTargetAttrs(link.url)}>${esc(link.label)} <span aria-hidden="true">↗</span></a>`)
       .join("");
   }
 
@@ -132,8 +141,8 @@ window.App.sections = (() => {
     renderServices(content.services);
     renderProjects(content.projects);
     renderProcess(content.process);
-    renderTestimonials(content.testimonials);
-    renderFaq(content.faq);
+    renderJourney(content.journey);
+    renderContactLinks(content);
     renderSocials(content.socials);
   }
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Portfolio</title>
-  <meta name="description" content="Data engineer and full-stack developer building warehouses, pipelines, dashboards and web apps." />
+  <meta name="description" content="Khalid Alghanemy — Computer Engineering graduate building real-time data pipelines, data warehouses and machine-learning systems." />
   <meta name="theme-color" content="#000000" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 16 L30 8 A16 16 0 1 0 30 24 Z' fill='%23a855f7'/></svg>" />
 
@@ -34,8 +34,8 @@
       <a href="#about">About</a>
       <a href="#services">Services</a>
       <a href="#work">Work</a>
-      <a href="#process">Process</a>
-      <a href="#faq">FAQ</a>
+      <a href="#journey">Journey</a>
+      <a href="#contact">Contact</a>
     </nav>
     <div class="nav-actions">
       <a href="#contact" class="btn btn-primary btn-sm">Hire me</a>
@@ -57,7 +57,7 @@
       <h1 class="hero-title reveal" id="hero-title"></h1>
 
       <p class="hero-subtitle reveal">
-        Hi, I'm <strong data-name></strong> — <span class="typed-role" id="typed-role"></span><span class="caret" aria-hidden="true">|</span><br />
+        Hi, I'm <strong data-name></strong> — I build <span class="typed-role" id="typed-role"></span><span class="caret" aria-hidden="true">|</span><br />
         <span id="hero-intro"></span>
       </p>
 
@@ -66,38 +66,22 @@
         <a href="#contact" class="btn btn-ghost">Let's talk</a>
       </div>
 
-      <!-- Product-style dashboard preview -->
+      <!-- Live preview of the MARKET_OS pipeline: data flow + real log lines -->
       <div class="mockup reveal" id="mockup">
         <div class="mockup-bar">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <div class="mockup-url">portfolio.dev/dashboard</div>
+          <div class="mockup-url">~/market-pipeline</div>
         </div>
         <div class="mockup-body">
-          <aside class="mockup-sidebar" aria-hidden="true">
-            <div class="sidebar-item active"></div>
-            <div class="sidebar-item"></div>
-            <div class="sidebar-item"></div>
-            <div class="sidebar-item"></div>
-            <div class="sidebar-item short"></div>
-          </aside>
-          <div class="mockup-main">
-            <div class="kpis">
-              <div class="kpi"><small>Revenue</small><b data-count="482" data-prefix="$" data-suffix="k">$0k</b><em class="kpi-up">+18.2%</em></div>
-              <div class="kpi"><small>Orders</small><b data-count="12940">0</b><em class="kpi-up">+9.4%</em></div>
-              <div class="kpi"><small>Pipelines</small><b data-count="36">0</b><em class="kpi-ok">all green</em></div>
-            </div>
-            <div class="chart">
-              <div class="chart-header"><span>Sales by month</span><span class="live-badge">LIVE</span></div>
-              <div class="chart-bars" id="chart-bars"></div>
-            </div>
-          </div>
+          <ol class="pipeline" id="pipeline" aria-label="MARKET_OS data flow"></ol>
+          <pre class="terminal" id="terminal" aria-label="Sample output from the MARKET_OS project"></pre>
         </div>
       </div>
     </section>
 
     <!-- ═══════════ Logo marquee ═══════════ -->
     <section class="marquee-section" aria-label="Tools I use">
-      <p class="marquee-caption">Tools I ship with every day</p>
+      <p class="marquee-caption">Tools I've used in my projects</p>
       <div class="marquee"><div class="marquee-track" id="marquee"></div></div>
     </section>
 
@@ -106,10 +90,10 @@
       <div class="about-grid">
         <div class="reveal">
           <p class="eyebrow">About</p>
-          <h2 class="section-title">Engineer by trade,<br /><span class="gradient-text">product builder</span> by habit.</h2>
+          <h2 class="section-title">Computer engineer.<br /><span class="gradient-text">Data &amp; AI</span> builder.</h2>
         </div>
         <div class="reveal">
-          <p class="lead">I work where data meets software: modelling warehouses, writing the pipelines that feed them, and building the apps and dashboards that sit on top. I care about boring reliability, clear docs and interfaces people enjoy using.</p>
+          <p class="lead" id="about-text"></p>
           <div class="stats" id="stats"></div>
         </div>
       </div>
@@ -118,8 +102,8 @@
     <!-- ═══════════ Services ═══════════ -->
     <section class="section" id="services">
       <div class="section-header reveal">
-        <p class="eyebrow">Services</p>
-        <h2 class="section-title">Everything from the <span class="gradient-text">raw CSV</span><br />to the boardroom chart.</h2>
+        <p class="eyebrow">What I do</p>
+        <h2 class="section-title">From <span class="gradient-text">live data streams</span><br />to trained models.</h2>
       </div>
       <div class="services-grid" id="services-grid"></div>
     </section>
@@ -128,8 +112,8 @@
     <section class="section" id="work">
       <div class="section-header split reveal">
         <div>
-          <p class="eyebrow">Selected work</p>
-          <h2 class="section-title">Projects I'm <span class="gradient-text">proud of</span>.</h2>
+          <p class="eyebrow">Projects</p>
+          <h2 class="section-title">Things I've <span class="gradient-text">built</span>.</h2>
         </div>
         <div class="filters" id="project-filters" role="tablist" aria-label="Filter projects"></div>
       </div>
@@ -139,28 +123,19 @@
     <!-- ═══════════ Process ═══════════ -->
     <section class="section" id="process">
       <div class="section-header centered reveal">
-        <p class="eyebrow">How I work</p>
-        <h2 class="section-title">Three steps. <span class="gradient-text">No surprises.</span></h2>
+        <p class="eyebrow">How I build</p>
+        <h2 class="section-title">Designed, tested, <span class="gradient-text">documented</span>.</h2>
       </div>
       <div class="steps-grid" id="process-steps"></div>
     </section>
 
-    <!-- ═══════════ Testimonials ═══════════ -->
-    <section class="section" id="testimonials">
+    <!-- ═══════════ Journey ═══════════ -->
+    <section class="section narrow" id="journey">
       <div class="section-header centered reveal">
-        <p class="eyebrow">Kind words</p>
-        <h2 class="section-title">What clients <span class="gradient-text">say</span>.</h2>
+        <p class="eyebrow">Journey</p>
+        <h2 class="section-title">Education &amp; <span class="gradient-text">training</span>.</h2>
       </div>
-      <div class="testimonials-grid" id="testimonials-grid"></div>
-    </section>
-
-    <!-- ═══════════ FAQ ═══════════ -->
-    <section class="section narrow" id="faq">
-      <div class="section-header centered reveal">
-        <p class="eyebrow">FAQ</p>
-        <h2 class="section-title">Questions, <span class="gradient-text">answered</span>.</h2>
-      </div>
-      <div class="faq-list" id="faq-list"></div>
+      <ol class="timeline" id="timeline"></ol>
     </section>
 
     <!-- ═══════════ Contact ═══════════ -->
@@ -168,9 +143,10 @@
       <div class="cta reveal">
         <div class="cta-glow" aria-hidden="true"></div>
         <p class="eyebrow">Contact</p>
-        <h2 class="section-title">Got a project in mind?<br /><span class="gradient-text">Let's build it.</span></h2>
+        <h2 class="section-title">Let's build something<br /><span class="gradient-text">together.</span></h2>
+        <div class="contact-links" id="contact-links"></div>
 
-        <form class="contact-form" id="contact-form" novalidate>
+        <form class="contact-form" id="contact-form" novalidate hidden>
           <div class="field">
             <label for="contact-name">Name</label>
             <input id="contact-name" name="name" required autocomplete="name" placeholder="Your name" />

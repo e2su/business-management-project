@@ -95,22 +95,11 @@ window.App.effects = (() => {
     follow();
   }
 
-  /** Keeps only one FAQ answer open at a time. */
-  function singleOpenAccordion(selector) {
-    const items = $$(selector);
-    items.forEach((item) =>
-      item.addEventListener("toggle", () => {
-        if (item.open) items.forEach((other) => other !== item && (other.open = false));
-      }),
-    );
-  }
-
   function init() {
     revealOnScroll();
     cardSpotlight();
     tiltOnHover(".project");
     cursorGlow();
-    singleOpenAccordion("#faq-list details");
   }
 
   return { init };

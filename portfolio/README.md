@@ -17,11 +17,11 @@ Then open http://localhost:8000. To deploy, upload the folder to any static host
 
 | What | Where |
 |---|---|
-| Name, intro, stats, projects, services, testimonials, FAQ, socials, contact email | `js/content.js` |
+| Name, intro, stats, projects, services, journey, socials, contact email | `js/content.js` |
 | Gradient colors and other design tokens | `css/tokens.css` |
 | Logos used in the marquee, thumbnails and background | `js/logos-data.js` ([Simple Icons](https://simpleicons.org), CC0) |
 
-> ⚠ Most of `js/content.js` is placeholder text: stats, testimonials and every project except SalesDW. Replace it before publishing.
+> Everything in `js/content.js` comes from the public repos at github.com/e2su. Fields marked `TODO` (email, LinkedIn, CV, dates) are still missing; the page hides empty fields, and the contact form only appears once `email` is set.
 
 ## File structure
 
@@ -38,7 +38,7 @@ js/
   core.js               shared helpers, defines window.App
   pacman-background.js  animated background (Grid, Maze, Pellets, Actor, game loop)
   sections.js           renders the content into the page
-  hero.js               headline animation, typewriter, dashboard mockup
+  hero.js               headline animation, typewriter, pipeline + terminal preview
   projects.js           project filter and pixel-art thumbnails
   effects.js            scroll reveals, counters, card spotlight, cursor glow
   nav.js                nav bar state and mobile menu

@@ -1,16 +1,18 @@
 /**
  * Hero section: animated headline, typewriter roles and the
- * dashboard mockup (live bar chart + tilt-on-scroll).
+ * project preview window (pipeline diagram + terminal replaying
+ * real log lines from the MARKET_OS README, tilting on scroll).
  */
 window.App.hero = (() => {
   "use strict";
-  const { $, $$, escapeHtml: esc, prefersReducedMotion } = window.App;
+  const { $, escapeHtml: esc, prefersReducedMotion, findLogo, logoSvg } = window.App;
 
   const TYPE_DELAY_MS = 80;
   const DELETE_DELAY_MS = 40;
   const HOLD_WORD_MS = 1600;
-  const CHART_REFRESH_MS = 3500;
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const TERMINAL_CHAR_MS = 28;
+  const TERMINAL_LINE_PAUSE_MS = 450;
+  const TERMINAL_RESTART_MS = 4000;
 
   /** Splits the headline into words that animate in one after another. */
   function renderHeadline(lines) {
@@ -58,32 +60,62 @@ window.App.hero = (() => {
     tick();
   }
 
-  // ── Mockup chart ────────────────────────────────────────────
-  function buildChart() {
-    $("#chart-bars").innerHTML = MONTHS.map(() => '<div class="bar"></div>').join("");
+  // ── Pipeline diagram ────────────────────────────────────────
+  function renderPipeline(stages) {
+    $("#pipeline").innerHTML = stages
+      .map((stage) => {
+        const logo = stage.logo && findLogo(stage.logo);
+        const icon = logo ? `<span class="stage-icon" style="--brand: ${logo.color}">${logoSvg(logo)}</span>` : '<span class="stage-icon stage-icon-empty"></span>';
+        return `<li class="stage">${icon}<span>${esc(stage.label)}</span></li>`;
+      })
+      .join('<li class="link" aria-hidden="true"></li>');
   }
 
-  /** Gives every bar a new, roughly wave-shaped random height. */
-  function shuffleChart() {
-    $$("#chart-bars .bar").forEach((bar, i) => {
-      const wave = 0.5 + 0.5 * Math.sin(i / 2 + Math.random());
-      const value = Math.min(100, Math.round(25 + 60 * wave + Math.random() * 15));
-      bar.style.height = `${value}%`;
-      bar.dataset.label = `${MONTHS[i]} · ${value}k`;
-    });
-  }
+  // ── Terminal ────────────────────────────────────────────────
+  /**
+   * Replays the lines one character at a time: commands get a "$"
+   * prompt, output lines appear in a muted colour. Loops forever.
+   */
+  function startTerminal(lines) {
+    const el = $("#terminal");
+    const render = (count, partial = "") =>
+      lines
+        .slice(0, count)
+        .map((line) => lineHtml(line))
+        .concat(partial ? [lineHtml(lines[count], partial)] : [])
+        .join("");
 
-  function startChartWhenVisible(mockup) {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      observer.disconnect();
-      shuffleChart();
-      if (!prefersReducedMotion) {
-        setInterval(() => { if (!document.hidden) shuffleChart(); }, CHART_REFRESH_MS);
+    if (prefersReducedMotion) {
+      el.innerHTML = render(lines.length);
+      return;
+    }
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    const tick = () => {
+      if (lineIndex === lines.length) {
+        setTimeout(() => { lineIndex = 0; charIndex = 0; tick(); }, TERMINAL_RESTART_MS);
+        return;
       }
-    });
-    observer.observe(mockup);
+      const chars = [...lineText(lines[lineIndex])]; // spread keeps emoji in one piece
+      charIndex++;
+      el.innerHTML = render(lineIndex, chars.slice(0, charIndex).join("")) + '<span class="terminal-cursor"></span>';
+      if (charIndex >= chars.length) {
+        lineIndex++;
+        charIndex = 0;
+        setTimeout(tick, TERMINAL_LINE_PAUSE_MS);
+      } else {
+        // output lines appear faster than typed commands
+        setTimeout(tick, lines[lineIndex].cmd ? TERMINAL_CHAR_MS * 2 : TERMINAL_CHAR_MS / 2);
+      }
+    };
+    tick();
   }
+  const lineText = (line) => line.cmd ?? line.out;
+  const lineHtml = (line, text = lineText(line)) =>
+    line.cmd
+      ? `<span class="terminal-line"><span class="terminal-prompt">$</span> ${esc(text)}</span>`
+      : `<span class="terminal-line terminal-output">${esc(text)}</span>`;
 
   /** The mockup starts tilted back and flattens as the page scrolls. */
   function tiltMockupOnScroll(mockup) {
@@ -101,10 +133,9 @@ window.App.hero = (() => {
     renderHeadline(content.headline);
     startTypewriter(content.roles);
 
-    const mockup = $("#mockup");
-    buildChart();
-    startChartWhenVisible(mockup);
-    tiltMockupOnScroll(mockup);
+    renderPipeline(content.pipeline);
+    startTerminal(content.terminal);
+    tiltMockupOnScroll($("#mockup"));
   }
 
   return { init };

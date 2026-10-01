@@ -33,6 +33,8 @@ window.App.contactForm = (() => {
 
   function init(toAddress) {
     const form = $("#contact-form");
+    if (!toAddress) return; // no email configured yet: the form stays hidden
+    form.hidden = false;
     const status = $("#form-status");
 
     form.addEventListener("submit", (e) => {
