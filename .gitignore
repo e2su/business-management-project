@@ -11,3 +11,4 @@ data/sample/
 infra/terraform/.terraform/
 infra/terraform/*.tfstate*
 infra/terraform/terraform.tfvars
+site/data.json

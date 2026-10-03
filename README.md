@@ -10,6 +10,9 @@ automatically, new column names are handled through config instead of code
 changes, unknown columns are kept rather than dropped, and late or corrected
 data is merged in place.
 
+**Live dashboard:** https://e2su.github.io/business-management-project/ — rebuilt
+daily by GitHub Actions running the real pipeline (see below).
+
 ```
  Source systems                 ETL (Python)                     Warehouse (PostgreSQL)            BI
  ───────────────                ────────────                     ──────────────────────            ──
@@ -33,6 +36,7 @@ data is merged in place.
 | ETL pipeline | `salesdw/etl/` | Auto-detects file type & entity, column aliases, value normalisation, data-quality rejects, idempotent loads, per-file transactions |
 | Merge logic (ELT) | `warehouse/merge/` | Set-based SQL: SCD2, late-arriving dimensions (inferred members), fact upserts with point-in-time key lookup |
 | Live ingestion | `salesdw/cli.py watch`, `salesdw/api.py` | Folder watcher + REST API (upload files, push JSON records, trigger runs, monitor) |
+| Web dashboard | `site/`, `salesdw/export_site.py`, `.github/workflows/pages.yml` | Static dashboard on GitHub Pages, rebuilt daily by running the pipeline in CI |
 | Power BI | `powerbi/` | Connection & model guide, 40+ DAX measures, theme, page blueprint |
 | Infrastructure | `docker-compose.yml`, `infra/terraform/` | One-command local stack; Azure VM + data disk + NSG + nightly backups |
 | Demo data | `salesdw/generator.py` | "Horizon Retail Co.": 10 stores in 6 countries/currencies, seasonality, growth, promotions, returns |
@@ -126,6 +130,27 @@ entity is detected from the folder name, the file name (`orders_*.csv`,
   `monthly_kpis` (MoM/YoY), `target_vs_actual`, `customer_rfm`,
   `product_performance` (ABC), `pipeline_health`.
 * `meta.*` — `etl_runs`, `ingested_files`, `rejected_rows`, `schema_drift`.
+
+## Live dashboard (GitHub Pages)
+
+`.github/workflows/pages.yml` starts PostgreSQL inside GitHub Actions and runs
+the full pipeline:
+1. loads the demo history
+2. loads a new day from a second "POS system" with different headers
+3. exports the mart views with `python -m salesdw export-site`
+4. publishes `site/` to GitHub Pages
+
+It runs on every push to `main` and once a day. The page is static, so it
+shows a snapshot from the last run: no uploads, no API.
+
+One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+To preview locally after loading data:
+
+```bash
+python -m salesdw export-site --out site/data.json
+python -m http.server -d site 8080      # open http://localhost:8080
+```
 
 ## Deploying on Azure (IaaS)
 

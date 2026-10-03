@@ -6,6 +6,7 @@
   generate    create demo data (history, or one day of new activity with --increment)
   status      show recent runs, files, rejects and new columns
   serve       start the REST management API
+  export-site write the dashboard data (site/data.json) for the static website
 """
 from __future__ import annotations
 
@@ -112,6 +113,11 @@ def cmd_status(args) -> None:
                 print("  (none)")
 
 
+def cmd_export_site(args) -> None:
+    from .export_site import export_site
+    print(f"wrote {export_site(Path(args.out))}")
+
+
 def cmd_serve(args) -> None:
     import uvicorn
     _wait_for_db()
@@ -148,6 +154,10 @@ def main(argv: list[str] | None = None) -> None:
     st = sub.add_parser("status")
     st.add_argument("--limit", type=int, default=10)
     st.set_defaults(func=cmd_status)
+
+    ex = sub.add_parser("export-site")
+    ex.add_argument("--out", default="site/data.json")
+    ex.set_defaults(func=cmd_export_site)
 
     sv = sub.add_parser("serve")
     sv.add_argument("--host", default="0.0.0.0")

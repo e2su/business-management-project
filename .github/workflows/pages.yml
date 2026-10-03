@@ -1,0 +1,81 @@
+# Publishes the live dashboard (site/) to GitHub Pages.
+#
+# Each run builds a fresh warehouse with the real pipeline: PostgreSQL service ->
+# demo history -> ETL -> a new day from a "different" POS system -> ETL ->
+# export of the mart views -> static site. It runs on every push to main and
+# once a day, so the dashboard always shows "today".
+#
+# One-time setup: repository Settings -> Pages -> Source: "GitHub Actions".
+name: Dashboard (GitHub Pages)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 5 * * *"   # daily, 05:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: salesdw
+          POSTGRES_PASSWORD: salesdw
+          POSTGRES_DB: sales_dw
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U salesdw" --health-interval 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql+psycopg2://salesdw:salesdw@localhost:5432/sales_dw
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Load demo history into the warehouse
+        run: |
+          python -m salesdw init-db
+          python -m salesdw generate
+          python -m salesdw run --trigger history-load > /dev/null
+
+      - name: Load today's feed from a second source system
+        run: |
+          python -m salesdw generate --increment
+          python -m salesdw run --trigger daily-feed > /dev/null
+          python -m salesdw status
+
+      - name: Export dashboard data
+        run: python -m salesdw export-site --out site/data.json
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
