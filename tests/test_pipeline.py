@@ -145,3 +145,18 @@ def test_powerbi_user_can_only_read_marts(env, monkeypatch):
                 conn.execute(text(stmt))
     finally:
         reader.dispose()
+
+
+def test_site_export(env):
+    from salesdw.export_site import build_site_data
+
+    settings, engine = env
+    generate_history(settings.incoming, date(2025, 1, 1), date(2025, 3, 31), customers=80, daily_orders=5)
+    run_pipeline(engine=engine, settings=settings)
+    d = build_site_data(engine)
+    assert d["kpis"]["current"]["net_sales"] > 0
+    assert len(d["monthly"]) == 3 and d["monthly"][0]["month"] == "2025-01-01"
+    assert d["stores"] and all(r["target"] > 0 for r in d["stores"])
+    assert len(d["products"]) == 10 and d["products"][0]["abc"] == "A"
+    assert d["warehouse"]["last_day"] == "2025-03-31"
+    assert d["runs"][0]["status"] == "success"
